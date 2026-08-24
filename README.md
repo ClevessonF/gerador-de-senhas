@@ -30,7 +30,3 @@ Depois que a senha for gerada, você pode:
 ## 🛠️ Requisitos
 
 - Python 3 instalado no computador
-
-## 📄 Licença
-
-Sinta-se à vontade para usar, copiar e modificar este projeto como quiser.
