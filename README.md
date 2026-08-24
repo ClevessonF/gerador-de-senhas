@@ -1,12 +1,24 @@
 # 🔐 Gerador de Senhas
 
-Um gerador de senhas aleatórias e seguras, feito em Python, com um menu interativo direto no terminal.
+**🔗 [Acesse o site aqui](https://clevessonf.github.io/gerador-de-senhas/)**
+
+Um gerador de senhas aleatórias e seguras, feito em Python (versão terminal) e também em HTML/CSS/JS (versão web), com um visual desenhado à mão inspirado em cartas de baralho.
 
 ## 📋 O que o projeto faz
 
 Gera senhas aleatórias combinando letras minúsculas, maiúsculas, números e símbolos, para ajudar você a criar senhas mais seguras.
 
-## 🚀 Como usar
+## 🌐 Versão web
+
+Acesse direto pelo navegador, sem precisar instalar nada:
+
+**👉 https://clevessonf.github.io/gerador-de-senhas/**
+
+- Escolha o tamanho da senha (de 6 a 32 caracteres)
+- Ligue ou desligue maiúsculas, números e símbolos
+- Copie a senha com um clique
+
+## 💻 Versão terminal (Python)
 
 Rode o comando abaixo:
 
@@ -29,7 +41,8 @@ Depois que a senha for gerada, você pode:
 
 ## 🛠️ Requisitos
 
-- Python 3 instalado no computador
+- Para a versão terminal: Python 3 instalado no computador
+- Para a versão web: nenhum requisito, só um navegador
 
 ## 🎬 Demonstração
 
