@@ -1,7 +1,5 @@
 # 🔐 Gerador de Senhas
 
-![Demonstração do programa](demo_gerador_senhas.gif)
-
 Um gerador de senhas aleatórias e seguras, feito em Python, com um menu interativo direto no terminal.
 
 ## 📋 O que o projeto faz
@@ -32,3 +30,7 @@ Depois que a senha for gerada, você pode:
 ## 🛠️ Requisitos
 
 - Python 3 instalado no computador
+
+## 🎬 Demonstração
+
+![Demonstração do programa](demo_gerador_senhas.gif)
