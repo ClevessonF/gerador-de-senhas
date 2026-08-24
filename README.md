@@ -47,7 +47,3 @@ python gerador_senhas.py -t 16 -q 5
 ## 🛠️ Requisitos
 
 - Python 3 instalado no computador
-
-## 📄 Licença
-
-Sinta-se à vontade para usar, copiar e modificar este projeto como quiser.
