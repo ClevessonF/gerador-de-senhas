@@ -1,5 +1,7 @@
 # 🔐 Gerador de Senhas
 
+![Demonstração do programa](demo_gerador_senhas.gif)
+
 Um gerador de senhas aleatórias e seguras, feito em Python, com um menu interativo direto no terminal.
 
 ## 📋 O que o projeto faz
@@ -10,9 +12,9 @@ Gera senhas aleatórias combinando letras minúsculas, maiúsculas, números e s
 
 Rode o comando abaixo:
 
-bash
+```bash
 python gerador_senhas_interativo.py
-
+```
 
 Primeiro, escolha o tamanho da senha em um mini menu:
 
