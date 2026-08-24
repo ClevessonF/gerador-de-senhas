@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Senhas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Cormorant+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f5ef;
+    --paper-2:#efece2;
+    --ink:#151414;
+    --ink-soft:#4a4642;
+    --line: rgba(21,20,20,0.16);
+    --line-strong: rgba(21,20,20,0.6);
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(21,20,20,0.015) 0px, rgba(21,20,20,0.015) 1px, transparent 1px, transparent 3px);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding: 40px 20px 60px;
+  }
+
+  .top-badge{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .top-badge svg{ width: 26px; height: 8px; overflow: visible; }
+  .top-badge path{ animation: wiggle-a 4.5s ease-in-out infinite; }
+  .top-badge .flip path{ animation-name: wiggle-b; }
+
+  h1{
+    font-family:'Libre Caslon Text', serif;
+    font-weight:700;
+    font-size: clamp(30px, 5.5vw, 46px);
+    margin: 0 0 2px;
+    text-align:center;
+    letter-spacing: 0.01em;
+    position: relative;
+  }
+  h1 em{ font-style: italic; font-weight: 400; }
+
+  .underline-wiggle{
+    display:block;
+    width: 168px;
+    height: 14px;
+    margin: 2px auto 18px;
+    overflow: visible;
+  }
+  .underline-wiggle path{
+    animation: wiggle-a 5s ease-in-out infinite;
+  }
+
+  .subtitle{
+    color: var(--ink-soft);
+    text-align:center;
+    max-width: 420px;
+    margin: 0 0 34px;
+    font-size: 18px;
+    line-height:1.5;
+    font-style: italic;
+  }
+
+  /* Cartão com moldura desenhada à mão */
+  .card{
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    padding: 12px;
+  }
+  .card-frame{
+    position:absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .card-frame path{
+    animation: wiggle-a 7s ease-in-out infinite;
+  }
+  .card-inner{
+    position: relative;
+    background: var(--paper);
+    padding: 30px 28px;
+  }
+  .corner-mark{
+    position:absolute;
+    width: 22px;
+    height: 22px;
+    overflow: visible;
+  }
+  .corner-mark.tl{ top: -2px; left: -2px; }
+  .corner-mark.tr{ top: -2px; right: -2px; transform: scaleX(-1); }
+  .corner-mark.bl{ bottom: -2px; left: -2px; transform: scaleY(-1); }
+  .corner-mark.br{ bottom: -2px; right: -2px; transform: scale(-1,-1); }
+  .corner-mark path{ animation: wiggle-b 6s ease-in-out infinite; }
+
+  .password-display{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 3px;
+    background: var(--paper-2);
+    border: 1px solid var(--line-strong);
+    border-radius: 3px 7px 4px 8px;
+    padding: 22px 12px;
+    margin-bottom: 22px;
+    min-height: 66px;
+    flex-wrap: wrap;
+  }
+  .password-display .placeholder{
+    font-family:'JetBrains Mono', monospace;
+    color: var(--ink-soft);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    font-style: normal;
+  }
+  .char{
+    font-family:'JetBrains Mono', monospace;
+    font-size: clamp(17px, 4.2vw, 22px);
+    font-weight: 600;
+    color: var(--ink);
+    display:inline-block;
+    min-width: 0.7em;
+    text-align:center;
+  }
+  .char.symbol{ font-style: italic; }
+  .char.number{ text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+  .actions-row{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  button{
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1.5px solid var(--ink);
+    border-radius: 4px 8px 5px 9px;
+    cursor:pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-radius 0.3s ease;
+    background: transparent;
+    color: var(--ink);
+  }
+  button:active{ transform: translateY(1px); }
+  button:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; }
+  button:hover{ border-radius: 8px 4px 9px 5px; }
+
+  .btn-generate{
+    flex:1;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 13px 18px;
+  }
+  .btn-generate:hover{ background: #000; }
+
+  .btn-copy{
+    padding: 13px 18px;
+    min-width: 96px;
+  }
+  .btn-copy:hover{ background: var(--ink); color: var(--paper); }
+  .btn-copy.copied{ background: var(--ink); color: var(--paper); }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap: 16px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .option-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+  }
+
+  .option-label{ font-size: 17px; color: var(--ink); }
+  .option-label small{
+    display:block;
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-top: 1px;
+    font-family: 'JetBrains Mono', monospace;
+    font-style: normal;
+    letter-spacing: 0.02em;
+  }
+
+  .length-control{ display:flex; align-items:center; gap: 14px; }
+  input[type="range"]{
+    -webkit-appearance:none;
+    appearance:none;
+    width: 130px;
+    height: 1px;
+    background: var(--line-strong);
+    outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width: 13px; height:13px;
+    border-radius: 40% 60% 55% 45%;
+    background: var(--paper);
+    cursor:pointer;
+    border: 1.5px solid var(--ink);
+  }
+  input[type="range"]::-moz-range-thumb{
+    width: 13px; height:13px;
+    border-radius: 40% 60% 55% 45%;
+    background: var(--paper);
+    cursor:pointer;
+    border: 1.5px solid var(--ink);
+  }
+  .length-value{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:600;
+    font-size: 13px;
+    color: var(--ink);
+    min-width: 24px;
+    text-align:right;
+  }
+
+  .switch{ position:relative; width: 38px; height: 22px; flex-shrink:0; }
+  .switch input{ opacity:0; width:0; height:0; position:absolute; }
+  .switch label{
+    position:absolute;
+    inset:0;
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    border-radius: 5px 9px 6px 10px;
+    cursor:pointer;
+    transition: background 0.15s ease;
+  }
+  .switch label::after{
+    content:"";
+    position:absolute;
+    top:2px; left:2px;
+    width:15px; height:15px;
+    background: var(--ink);
+    border-radius: 40% 60% 55% 45%;
+    transition: transform 0.15s ease;
+  }
+  .switch input:checked + label{ background: var(--paper); }
+  .switch input:checked + label::after{ transform: translateX(14px); }
+
+  .wiggle-divider{
+    display:block;
+    width: 100%;
+    height: 10px;
+    margin: 20px 0;
+    overflow: visible;
+  }
+  .wiggle-divider path{ animation: wiggle-a 6s ease-in-out infinite; }
+
+  .strength{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .strength-bars{ display:flex; gap: 4px; flex:1; }
+  .strength-bars span{
+    height: 3px;
+    flex:1;
+    background: var(--line);
+    border-radius: 2px;
+    transition: background 0.2s ease;
+  }
+  .strength-bars span.filled{ background: var(--ink); }
+  .strength-label{ min-width: 56px; text-align:right; }
+
+  footer{
+    margin-top: 30px;
+    color: var(--ink-soft);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    font-family:'JetBrains Mono', monospace;
+    text-align:center;
+  }
+  footer a{ color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+  @keyframes wiggle-a{
+    0%   { transform: translate(0px, 0px) rotate(0deg); }
+    25%  { transform: translate(0.6px, -0.4px) rotate(0.15deg); }
+    50%  { transform: translate(-0.3px, 0.5px) rotate(-0.1deg); }
+    75%  { transform: translate(0.4px, 0.3px) rotate(0.12deg); }
+    100% { transform: translate(0px, 0px) rotate(0deg); }
+  }
+  @keyframes wiggle-b{
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(-0.5px, 0.4px) scale(1.03); }
+    66%  { transform: translate(0.4px, -0.3px) scale(0.98); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="top-badge">
+    <svg viewBox="0 0 26 8"><path d="M1,4 Q7,1 13,4 T25,4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Edição Clássica
+    <svg class="flip" viewBox="0 0 26 8"><path d="M1,4 Q7,1 13,4 T25,4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+  </div>
+
+  <h1>Gerador de <em>Senhas</em></h1>
+  <svg class="underline-wiggle" viewBox="0 0 168 14" preserveAspectRatio="none">
+    <path d="M4,7 Q20,2 36,7 T68,7 T100,7 T132,7 T164,7" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+
+  <p class="subtitle">Uma senha nova a cada carta virada. Tudo gerado aqui mesmo no seu navegador, nada sai do seu dispositivo.</p>
+
+  <div class="card">
+    <svg class="card-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <path d="M 3,4 C 20,2.5 55,3.4 97,3
+               C 98.3,25 97.5,60 96.8,97
+               C 70,98.4 30,97.6 3.2,96.5
+               C 2,70 2.6,30 3,4 Z"
+        fill="none" stroke="var(--ink)" stroke-width="1.1" vector-effect="non-scaling-stroke"/>
+    </svg>
+
+    <div class="card-inner">
+      <svg class="corner-mark tl" viewBox="0 0 22 22"><path d="M2,14 Q2,2 14,2" fill="none" stroke="var(--ink-soft)" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg class="corner-mark tr" viewBox="0 0 22 22"><path d="M2,14 Q2,2 14,2" fill="none" stroke="var(--ink-soft)" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg class="corner-mark bl" viewBox="0 0 22 22"><path d="M2,14 Q2,2 14,2" fill="none" stroke="var(--ink-soft)" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg class="corner-mark br" viewBox="0 0 22 22"><path d="M2,14 Q2,2 14,2" fill="none" stroke="var(--ink-soft)" stroke-width="1.3" stroke-linecap="round"/></svg>
+
+      <div class="password-display" id="passwordDisplay">
+        <span class="placeholder">clique em gerar para começar</span>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-generate" id="generateBtn">Gerar senha</button>
+        <button class="btn-copy" id="copyBtn">Copiar</button>
+      </div>
+
+      <div class="options">
+        <div class="option-row">
+          <div class="option-label">Tamanho <small>de 6 a 32 caracteres</small></div>
+          <div class="length-control">
+            <input type="range" id="lengthSlider" min="6" max="32" value="12">
+            <span class="length-value" id="lengthValue">12</span>
+          </div>
+        </div>
+
+        <svg class="wiggle-divider" viewBox="0 0 400 10" preserveAspectRatio="none" style="margin:0;">
+          <path d="M2,5 Q100,2 200,5 T398,5" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
+        </svg>
+
+        <div class="option-row">
+          <div class="option-label">Maiúsculas <small>A, B, C</small></div>
+          <div class="switch"><input type="checkbox" id="optUpper" checked><label for="optUpper"></label></div>
+        </div>
+        <div class="option-row">
+          <div class="option-label">Números <small>0, 1, 2</small></div>
+          <div class="switch"><input type="checkbox" id="optNumbers" checked><label for="optNumbers"></label></div>
+        </div>
+        <div class="option-row">
+          <div class="option-label">Símbolos <small>!, @, #</small></div>
+          <div class="switch"><input type="checkbox" id="optSymbols" checked><label for="optSymbols"></label></div>
+        </div>
+      </div>
+
+      <svg class="wiggle-divider" viewBox="0 0 400 10" preserveAspectRatio="none">
+        <path d="M2,5 Q100,2 200,5 T398,5" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
+      </svg>
+
+      <div class="strength">
+        <span>Força</span>
+        <div class="strength-bars">
+          <span id="bar1"></span><span id="bar2"></span><span id="bar3"></span><span id="bar4"></span>
+        </div>
+        <span class="strength-label" id="strengthLabel">—</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    feito em HTML + JS · código no <a href="https://github.com/ClevessonF/gerador-de-senhas" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+<script>
+  const LOWER = "abcdefghijklmnopqrstuvwxyz";
+  const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const NUMBERS = "0123456789";
+  const SYMBOLS = "!@#$%&*?+-=";
+  const ALL_FOR_SCRAMBLE = LOWER + UPPER + NUMBERS + SYMBOLS;
+
+  const display = document.getElementById('passwordDisplay');
+  const generateBtn = document.getElementById('generateBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const lengthSlider = document.getElementById('lengthSlider');
+  const lengthValue = document.getElementById('lengthValue');
+  const optUpper = document.getElementById('optUpper');
+  const optNumbers = document.getElementById('optNumbers');
+  const optSymbols = document.getElementById('optSymbols');
+  const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3'), document.getElementById('bar4')];
+  const strengthLabel = document.getElementById('strengthLabel');
+
+  let currentPassword = "";
+
+  lengthSlider.addEventListener('input', () => {
+    lengthValue.textContent = lengthSlider.value;
+  });
+
+  function randomChar(str){
+    return str[Math.floor(Math.random() * str.length)];
+  }
+
+  function buildCharset(){
+    let charset = LOWER;
+    if (optUpper.checked) charset += UPPER;
+    if (optNumbers.checked) charset += NUMBERS;
+    if (optSymbols.checked) charset += SYMBOLS;
+    return charset;
+  }
+
+  function classify(ch){
+    if (SYMBOLS.includes(ch)) return 'symbol';
+    if (NUMBERS.includes(ch)) return 'number';
+    return '';
+  }
+
+  function generatePassword(){
+    const charset = buildCharset();
+    const length = parseInt(lengthSlider.value, 10);
+    let result = "";
+    for (let i = 0; i < length; i++){
+      result += randomChar(charset);
+    }
+    return result;
+  }
+
+  function renderStrength(length){
+    let score = 0;
+    if (length >= 8) score++;
+    if (length >= 12) score++;
+    if (optSymbols.checked && optNumbers.checked) score++;
+    if (optUpper.checked && length >= 10) score++;
+
+    const labels = ['fraca', 'fraca', 'média', 'boa', 'forte'];
+    bars.forEach((bar, i) => bar.classList.toggle('filled', i < score));
+    strengthLabel.textContent = labels[score] || 'forte';
+  }
+
+  function animateReveal(finalPassword){
+    const spans = finalPassword.split('').map(() => {
+      const s = document.createElement('span');
+      s.className = 'char';
+      s.textContent = randomChar(ALL_FOR_SCRAMBLE);
+      return s;
+    });
+
+    display.innerHTML = "";
+    spans.forEach(s => display.appendChild(s));
+
+    const staggerPerChar = 28;
+
+    spans.forEach((span, index) => {
+      const finalChar = finalPassword[index];
+      const scrambleTicks = 6;
+      let tick = 0;
+
+      setTimeout(() => {
+        const interval = setInterval(() => {
+          tick++;
+          if (tick >= scrambleTicks){
+            clearInterval(interval);
+            span.textContent = finalChar;
+            const cls = classify(finalChar);
+            if (cls) span.classList.add(cls);
+          } else {
+            span.textContent = randomChar(ALL_FOR_SCRAMBLE);
+          }
+        }, 45);
+      }, index * staggerPerChar);
+    });
+  }
+
+  function handleGenerate(){
+    currentPassword = generatePassword();
+    animateReveal(currentPassword);
+    renderStrength(currentPassword.length);
+    copyBtn.textContent = "Copiar";
+    copyBtn.classList.remove('copied');
+  }
+
+  async function handleCopy(){
+    if (!currentPassword) return;
+    try{
+      await navigator.clipboard.writeText(currentPassword);
+      copyBtn.textContent = "Copiado!";
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = "Copiar";
+        copyBtn.classList.remove('copied');
+      }, 1600);
+    }catch(e){
+      copyBtn.textContent = "Erro ao copiar";
+    }
+  }
+
+  generateBtn.addEventListener('click', handleGenerate);
+  copyBtn.addEventListener('click', handleCopy);
+
+  window.addEventListener('DOMContentLoaded', handleGenerate);
+</script>
+
+</body>
+</html>
